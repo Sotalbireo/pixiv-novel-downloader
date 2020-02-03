@@ -1,0 +1,31 @@
+{
+  "name": "pixiv-novel-downloader",
+  "version": "1.0.0",
+  "main": "dist/mod.js",
+  "author": "sasaky <athene609.cyl@gmail.com>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+    "start": "./dist/mod.js",
+    "dev": "./node_modules/.bin/ts-node ./src/mod.ts",
+    "compile": "webpack"
+  },
+  "dependencies": {
+    "@types/jsdom": "^12.2.4",
+    "@types/node": "^13.7.0",
+    "jsdom": "^16.0.1",
+    "mkdirp": "^1.0.3",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
+  },
+  "devDependencies": {
+    "@types/webpack": "^4.41.4",
+    "canvas": "^2.6.1",
+    "node-loader": "^0.6.0",
+    "ts-loader": "^6.2.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}
