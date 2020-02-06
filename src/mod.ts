@@ -35,7 +35,15 @@ const pixivNovel2AozoraTxt = (str: string) => {
 		.replace(/<br \/>/gi, '\r\n')
 		.replace(/\[newpage\]/gi, '［＃改ページ］')
 		.replace(/\[chapter:(.*?)\]/gi, '$1［＃「$1」は中見出し］')
-		.replace(/\[\[rb:(.*?)(?:&gt;|>) (.*?)\]\]/gi, '｜$1《$2》')
+		// ルビ
+		.replace(/\[\[rb:(.*?)(?:&gt;|>) (.*?)\]\]/gi,
+			(_: string, p1: string, p2: string) => {
+				const isLatin = /^[A-z\u00C0-\u00ff\s'\.,-\/#!$%\^&\*;:{}=\-_`~()]+$/.test(p1)
+				p1 = p1.trim()
+				p2 = p2.trim()
+				return `｜${p1}《${p2}》${isLatin ? ' ' : ''}`
+			}
+		)
 		.trim()
 }
 
