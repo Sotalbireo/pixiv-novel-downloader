@@ -66,8 +66,16 @@ const virtualConsole = new jsdom.VirtualConsole()
 			referrer: 'https://www.pixiv.net/',
 			resources: 'usable',
 			virtualConsole,
+		}).catch(err => {
+			console.error(err)
+			return null
 		})
-		const dom = raw.window.document as Document
+
+		if (raw === null) {
+			continue
+		}
+
+		const dom = raw!.window.document as Document
 		const userdata = dom.querySelectorAll('.userdata')[0]
 		const title = fixDirectoryLikeString(userdata.querySelector('.title')?.textContent!)
 		const author = fixDirectoryLikeString(userdata.querySelector('.name a')?.textContent!)
