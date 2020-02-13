@@ -30,10 +30,12 @@ const fixDirectoryLikeString = (str: string) => {
 }
 const pixivNovel2AozoraTxt = (str: string) => {
 	return str
-		.replace(/<\/?div.*?>/gim, '')
+		// HTML 除去
 		.replace(/<\/h\d.*?>?/gi, '')
 		.replace(/<br \/>/gi, '\r\n')
+		// 改ページ
 		.replace(/\[newpage\]/gi, '［＃改ページ］')
+		// チャプター
 		.replace(/\[chapter:(.*?)\]/gi, '$1［＃「$1」は中見出し］')
 		// ルビ
 		.replace(/\[\[rb:(.*?)(?:&gt;|>) (.*?)\]\]/gi,
@@ -44,10 +46,12 @@ const pixivNovel2AozoraTxt = (str: string) => {
 				return `｜${p1}《${p2}》${isLatin ? ' ' : ''}`
 			}
 		)
+		// 添え物のような端トリム
 		.trim()
 }
 
 
+// DL先フォルダの作成
 if (!fs.existsSync(baseDir)) {
 	fs.mkdirSync(baseDir, { recursive: true })
 }
