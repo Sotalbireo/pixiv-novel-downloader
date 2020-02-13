@@ -15,8 +15,40 @@ if (process.argv.length < 3) {
 	process.exit()
 }
 
+const resolveArgv = (argv: string[]): string[] => {
+	let indices = []
+	let option = ''
+	// リストファイルの読み込みと適用
+	option = '-a'
+	if (argv.includes(option)) {
+		let idx = argv.indexOf(option)
+		while (idx !== -1) {
+			indices.push(idx)
+			idx = argv.indexOf(option, idx + 1)
+		}
+		indices.forEach(i => {
+			const file = resolve(argv[i + 1])
+			try {
+				const importArgv = fs.readFileSync(file, 'utf-8')
+					.split(/\r?\n/).map(s => s.trim())
+				argv.splice(i, 2)
+				argv.push(...importArgv)
+			} catch (err) {
+				console.error(err)
+			}
+		})
+	}
+	argv.forEach((arg, idx) => {
+		// 小説IDのみを引数にとったやつの対応
+		if (/^\d+$/.test(arg)) {
+			argv[idx] = `https://www.pixiv.net/novel/show.php?id=${arg}`
+		}
+	})
+	// Pixiv小説のURLのみを返す
+	return argv.filter(arg => /^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(arg))
+}
 
-const items = [...process.argv].slice(2)
+const items = resolveArgv([...process.argv].slice(2))
 const baseDir = `${homedir()}/Downloads/pixiv-novel`
 const stylizeLikePath = (str: string) => {
 	const uselessChar = {
@@ -71,31 +103,8 @@ if (!fs.existsSync(baseDir)) {
 }
 
 
-// リストファイルの読み込みと適用
-if (items.includes('-a')) {
-	const idx = items.indexOf('-a')
-	const file = resolve(items[idx + 1])
-	try {
-		const importItems = fs.readFileSync(file, 'utf-8')
-			.split(/\r?\n/).map(s => s.trim())
-		items.splice(idx, 2)
-		items.push(...importItems)
-	} catch (err) {
-		console.error(err)
-		process.exit(1)
-	}
-}
-
-
 ;(async () => {
 	for await (let item of items) {
-
-		if (/^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(item)) {
-		} else if (/^\d+$/.test(item)) {
-			item = `https://www.pixiv.net/novel/show.php?id=${item}`
-		} else {
-			continue
-		}
 
 		const raw = await JSDOM.fromURL(item, {
 			// contentType: 'text/html; charset=utf-8;',
