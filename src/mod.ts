@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { homedir } from 'os'
 import jsdom from 'jsdom'
+import { resolve } from 'path'
 const { JSDOM } = jsdom
 
 declare global {
@@ -61,6 +62,7 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 		// 添え物のような端トリム
 		.trim()
 }
+const virtualConsole = new jsdom.VirtualConsole()
 
 
 // DL先フォルダの作成
@@ -68,7 +70,22 @@ if (!fs.existsSync(baseDir)) {
 	fs.mkdirSync(baseDir, { recursive: true })
 }
 
-const virtualConsole = new jsdom.VirtualConsole()
+
+// リストファイルの読み込みと適用
+if (items.includes('-a')) {
+	const idx = items.indexOf('-a')
+	const file = resolve(items[idx + 1])
+	try {
+		const importItems = fs.readFileSync(file, 'utf-8')
+			.split(/\r?\n/).map(s => s.trim())
+		items.splice(idx, 2)
+		items.push(...importItems)
+	} catch (err) {
+		console.error(err)
+		process.exit(1)
+	}
+}
+
 
 ;(async () => {
 	for await (let item of items) {
