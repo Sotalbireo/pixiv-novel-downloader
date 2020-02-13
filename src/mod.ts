@@ -112,7 +112,13 @@ if (!fs.existsSync(baseDir)) {
 			resources: 'usable',
 			virtualConsole,
 		}).catch(err => {
-			console.error(err)
+			const statusCode: number = err.response.statusCode
+			if (statusCode === 403) {
+				console.error(`> ${item}`)
+				console.error(`Error #${statusCode}: URLが間違っていませんか？`)
+			} else {
+				console.error(`Error #${statusCode}: ${item}`)
+			}
 			return null
 		})
 
