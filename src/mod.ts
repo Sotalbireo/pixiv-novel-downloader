@@ -104,7 +104,7 @@ if (!fs.existsSync(baseDir)) {
 
 
 ;(async () => {
-	for await (let item of items) {
+	for await (const item of items) {
 
 		const raw = await JSDOM.fromURL(item, {
 			// contentType: 'text/html; charset=utf-8;',
@@ -120,7 +120,7 @@ if (!fs.existsSync(baseDir)) {
 			continue
 		}
 
-		const dom = raw!.window.document as Document
+		const dom = raw.window.document
 		const userdata = dom.querySelectorAll('.userdata')[0]
 		const title = stylizeLikePath(userdata.querySelector('.title')?.textContent!)
 		const author = stylizeLikePath(userdata.querySelector('.name a')?.textContent!)
