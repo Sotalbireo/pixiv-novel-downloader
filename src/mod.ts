@@ -68,7 +68,10 @@ const virtualConsole = new jsdom.VirtualConsole()
 ;(async () => {
 	for await (let item of items) {
 
-		if (!/^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(item)) {
+		if (/^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(item)) {
+		} else if (/^\d+$/.test(item)) {
+			item = `https://www.pixiv.net/novel/show.php?id=${item}`
+		} else {
 			continue
 		}
 
