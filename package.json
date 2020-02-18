@@ -1,14 +1,14 @@
 {
   "name": "pixiv-novel-downloader",
-  "version": "1.0.0",
-  "main": "dist/mod.js",
+  "version": "1.1.0",
+  "main": "dist/pixiv-novel-downloader.js",
   "author": "sasaky <athene609.cyl@gmail.com>",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=12"
   },
   "scripts": {
-    "start": "./dist/mod.js",
+    "start": "./dist/pixiv-novel-downloader.js",
     "dev": "./node_modules/.bin/ts-node ./src/mod.ts",
     "compile": "webpack"
   },

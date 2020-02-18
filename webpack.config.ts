@@ -7,7 +7,7 @@ const config: webpack.Configuration = {
   entry: "./src/mod.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "mod.js"
+    filename: "pixiv-novel-downloader.js"
   },
   module: {
     rules: [
