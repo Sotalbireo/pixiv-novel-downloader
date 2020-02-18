@@ -10,21 +10,29 @@ declare global {
 	}
 }
 
-if (process.argv.length < 3) {
-	console.log(process.argv)
+if (process.argv.length < 3 || process.argv.includes('--help')) {
+	console.log(`NAME:
+			pixiv-novel-downloader - Download Pixiv novels like Aozora-bunko format
+
+		USAGE:
+			pixiv-novel-downloader.js [options] arguments...
+
+		OPTIONS:
+			-a FILE		File containing URLs to download, one URL per line.
+					Lines starting with '#', ';' or ']' are considered as comments and ignored.
+			--help		Print this help text and exit
+	`.replace(/^\t\t/gm, ''))
 	process.exit()
 }
 
 const resolveArgv = (argv: string[]): string[] => {
 	let indices = []
-	let option = ''
 	// リストファイルの読み込みと適用
-	option = '-a'
-	if (argv.includes(option)) {
-		let idx = argv.indexOf(option)
+	if (argv.includes('-a')) {
+		let idx = argv.indexOf('-a')
 		while (idx !== -1) {
 			indices.push(idx)
-			idx = argv.indexOf(option, idx + 1)
+			idx = argv.indexOf('-a', idx + 1)
 		}
 		indices.forEach(i => {
 			try {
