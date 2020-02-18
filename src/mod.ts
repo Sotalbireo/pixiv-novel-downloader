@@ -2,7 +2,7 @@ import commander from 'commander'
 import fs from 'fs'
 import { homedir } from 'os'
 import jsdom from 'jsdom'
-import { version } from '../package.json'
+import { description, version } from '../package.json'
 import { resolve } from 'path'
 const program = new commander.Command()
 const { writeFile } = fs.promises
@@ -19,9 +19,11 @@ type ArgumentsOptions = {
 }
 
 program
+	.name('pixiv-novel-downloader.js')
+	.description(description)
 	.usage('[options] urls...')
 	.version(version, '-v, --version', 'output the current version')
-	.option('-a <FILE>', `File containing URLs to download, one URL per line. Lines starting with '#', ';' or ']' are considered as comments and ignored.`)
+	.option('-a, --batch-file <FILE>', `File containing URLs to download, one URL per line. Lines starting with '#', ';' or ']' are considered as comments and ignored.`)
 	.parse(process.argv)
 
 function resolveArgv(opts: ArgumentsOptions, args: string[]): string[] {
@@ -42,7 +44,7 @@ function resolveArgv(opts: ArgumentsOptions, args: string[]): string[] {
 		}
 	})
 	// Pixiv小説のURLのみを返す
-	return args.filter(arg => /^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(arg))
+	return args.filter(arg => /^https?:\/\/www\.pixiv\.net\/novel\/show.php\?id=\d+$/.test(arg))
 }
 function stylizeLikePath(str: string): string {
 	const uselessChar = {
@@ -99,7 +101,13 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 
 const items = resolveArgv(<ArgumentsOptions>program.opts(), program.args)
 const baseDir = `${homedir()}/Downloads/pixiv-novel`
-const virtualConsole = new jsdom.VirtualConsole()
+const jsdomOption = {
+	// contentType: 'text/html; charset=utf-8;',
+	referrer: 'https://www.pixiv.net/',
+	resources: 'usable' as 'usable',
+	// runScripts: 'dangerously' as 'dangerously',
+	virtualConsole: new jsdom.VirtualConsole(),
+}
 
 
 // DL先フォルダの作成
@@ -111,12 +119,7 @@ if (!fs.existsSync(baseDir)) {
 ;(async () => {
 	for await (const item of items) {
 
-		const raw = await JSDOM.fromURL(item, {
-			// contentType: 'text/html; charset=utf-8;',
-			referrer: 'https://www.pixiv.net/',
-			resources: 'usable',
-			virtualConsole,
-		}).catch(err => {
+		const raw = await JSDOM.fromURL(item, jsdomOption).catch(err => {
 			const statusCode: number = err.response.statusCode
 			if (statusCode === 403) {
 				console.error(`> ${item}`)
