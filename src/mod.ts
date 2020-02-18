@@ -1,7 +1,11 @@
+import commander from 'commander'
 import fs from 'fs'
 import { homedir } from 'os'
 import jsdom from 'jsdom'
+import { version } from '../package.json'
 import { resolve } from 'path'
+const program = new commander.Command()
+const { writeFile } = fs.promises
 const { JSDOM } = jsdom
 
 declare global {
@@ -9,58 +13,38 @@ declare global {
 		pixivNovel2AozoraTxt(): string
 	}
 }
-
-if (process.argv.length < 3 || process.argv.includes('--help')) {
-	console.log(`NAME:
-			pixiv-novel-downloader - Download Pixiv novels like Aozora-bunko format
-
-		USAGE:
-			pixiv-novel-downloader.js [options] arguments...
-
-		OPTIONS:
-			-a FILE		File containing URLs to download, one URL per line.
-					Lines starting with '#', ';' or ']' are considered as comments and ignored.
-			--help		Print this help text and exit
-	`.replace(/^\t\t/gm, ''))
-	process.exit()
+type ArgumentsOptions = {
+	'version': string
+	'A': string
 }
 
-const resolveArgv = (argv: string[]): string[] => {
-	let indices = []
+program
+	.usage('[options] urls...')
+	.version(version, '-v, --version', 'output the current version')
+	.option('-a <FILE>', `File containing URLs to download, one URL per line. Lines starting with '#', ';' or ']' are considered as comments and ignored.`)
+	.parse(process.argv)
+
+function resolveArgv(opts: ArgumentsOptions, args: string[]): string[] {
 	// リストファイルの読み込みと適用
-	if (argv.includes('-a')) {
-		let idx = argv.indexOf('-a')
-		while (idx !== -1) {
-			indices.push(idx)
-			idx = argv.indexOf('-a', idx + 1)
-		}
-		indices.forEach(i => {
-			try {
-				const file = resolve(argv[i + 1])
-				const importArgv = fs
-					.readFileSync(file, 'utf-8')
-					.split(/\r?\n/)
-					.map(s => s.trim())
-				argv.splice(i, 2)
-				argv.push(...importArgv)
-			} catch (err) {
-				console.error(err)
-			}
-		})
+	if (opts.A) {
+		const file = resolve(opts.A)
+		const importItems = fs
+			.readFileSync(file, 'utf-8')
+			.split(/\r?\n/)
+			.map(s => s.trim())
+			.filter(s => /^[^#;\]]/.test(s))
+		args.push(...importItems)
 	}
-	argv.forEach((arg, idx) => {
+	args.forEach((arg, idx) => {
 		// 小説IDのみを引数にとったやつの対応
 		if (/^\d+$/.test(arg)) {
-			argv[idx] = `https://www.pixiv.net/novel/show.php?id=${arg}`
+			args[idx] = `https://www.pixiv.net/novel/show.php?id=${arg}`
 		}
 	})
 	// Pixiv小説のURLのみを返す
-	return argv.filter(arg => /^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(arg))
+	return args.filter(arg => /^https?:\/\/www\.pixiv\.net\/novel\/show.php/.test(arg))
 }
-
-const items = resolveArgv([...process.argv].slice(2))
-const baseDir = `${homedir()}/Downloads/pixiv-novel`
-const stylizeLikePath = (str: string) => {
+function stylizeLikePath(str: string): string {
 	const uselessChar = {
 		'\/': '／',
 		'\>': '＞',
@@ -111,6 +95,10 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 		.replace(/^[\f\n\r\t\v \u00a0\u1680​\u180e\u2028\u2029\u202f\u205f​\ufeff\u{2000}-\u{200a}​]+/u, '')
 		.trimRight() + '\r\n'
 }
+
+
+const items = resolveArgv(<ArgumentsOptions>program.opts(), program.args)
+const baseDir = `${homedir()}/Downloads/pixiv-novel`
 const virtualConsole = new jsdom.VirtualConsole()
 
 
@@ -161,15 +149,15 @@ if (!fs.existsSync(baseDir)) {
 		const article = dom.querySelector('.novelbody-container noscript')?.textContent?.pixivNovel2AozoraTxt() ?? ''
 
 		const aozoraTxt = [title, author, item, '', '', article].join('\r\n')
+		const targetDir = `${baseDir}/${authorDir}`
 
-		if (!fs.existsSync(`${baseDir}/${authorDir}`)) {
-			fs.mkdirSync(`${baseDir}/${authorDir}`, { recursive: true })
+		if (!fs.existsSync(targetDir)) {
+			fs.mkdirSync(targetDir, { recursive: true })
 		}
 
-		fs.writeFile(`${baseDir}/${authorDir}/${fileName}.txt`,
-			aozoraTxt,
-			() => {
-				console.log(`Download complete: "${baseDir}/${authorDir}/${fileName}.txt"`)
+		writeFile(`${targetDir}/${fileName}.txt`, aozoraTxt)
+			.then(() => {
+				console.log(`Download complete: "${targetDir}/${fileName}.txt"`)
 			})
 
 	}

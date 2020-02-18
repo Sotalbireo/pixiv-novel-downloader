@@ -19,7 +19,7 @@ const config: webpack.Configuration = {
       {
         test: /\.node$/,
         use: "node-loader"
-      }
+      },
     ]
   },
   resolve: {

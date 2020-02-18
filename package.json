@@ -10,15 +10,17 @@
   "scripts": {
     "start": "./dist/pixiv-novel-downloader.js",
     "dev": "./node_modules/.bin/ts-node ./src/mod.ts",
-    "compile": "webpack"
+    "compile": "webpack",
+    "test": "yarn dev "
   },
   "dependencies": {
     "@types/jsdom": "^12.2.4",
     "@types/node": "^13.7.0",
+    "commander": "^4.1.1",
     "jsdom": "^16.0.1",
     "mkdirp": "^1.0.3",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.1-rc"
   },
   "devDependencies": {
     "@types/webpack": "^4.41.4",
