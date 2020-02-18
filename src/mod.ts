@@ -138,6 +138,13 @@ if (!fs.existsSync(baseDir)) {
 		const dom = raw.window.document
 		const userdata = dom.querySelector('.userdata')!
 		const title = stylizeLikePath(userdata.querySelector('.title')?.textContent ?? '')
+
+		// R-18 checker
+		if (dom.querySelector('div.r18-image')?.textContent?.includes('Join pixiv today and enjoy R-18 novels!')) {
+			console.log(`"${title}" is R-18 content. It cannot download yet, sorry.`)
+			continue
+		}
+
 		const articleId = new URL(item).search.match(/\&?id=(\d+)/)![1]
 		const author = stylizeLikePath(userdata.querySelector('.name a')?.textContent ?? '')
 		const authorId = userdata.querySelector('.name a')?.getAttribute('href')?.match(/\/(\d+)$/)![1]
