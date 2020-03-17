@@ -26,7 +26,7 @@ program
 	.option('-a, --batch-file <FILE>', `File containing URLs to download, one URL per line. Lines starting with '#', ';' or ']' are considered as comments and ignored.`)
 	.parse(process.argv)
 
-function resolveArgv(opts: ArgumentsOptions, args: string[]): string[] {
+function resolveArgv(opts: ArgumentsOptions, args: string[]) {
 	// リストファイルの読み込みと適用
 	if (opts.A) {
 		const file = resolve(opts.A)
@@ -37,8 +37,8 @@ function resolveArgv(opts: ArgumentsOptions, args: string[]): string[] {
 			.filter(s => /^[^#;\]]/.test(s))
 		args.push(...importItems)
 	}
-	args.forEach((arg, idx) => {
-		// 小説IDのみを引数にとったやつの対応
+	args.forEach(async (arg, idx) => {
+		// 小説IDのみを引数にとってる場合の対応
 		if (/^\d+$/.test(arg)) {
 			args[idx] = `https://www.pixiv.net/novel/show.php?id=${arg}`
 		}
@@ -67,7 +67,7 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 	return this
 		// HTML 除去
 		.replace(/<\/?div.*?>/gis, '')
-		.replace(/<\/h\d.*?>?/gi, '')
+		.replace(/<\/h\d.*?>/gi, '')
 		.replace(/<br \/>/gi, '')
 		// 改ページ
 		.replace(/\[newpage\]/gi, '［＃改ページ］')
@@ -88,7 +88,7 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 		.replace(/^［＃横組み］(.*)［＃横組み終わり］$/gm, '［＃ここから横組み］\r\n$1\r\n［＃ここで横組み終わり］')
 		.replace(/^［＃ここで横組み終わり］\r?\n［＃ここから横組み］\r?\n/gm, '')
 		// jumpurl
-		.replace(/\[\[jumpuri:(.*?) ?(?:&gt;|>) ?(.*?)\]\]/, '$1 <$2>')
+		.replace(/\[\[jumpuri:(.*?) ?(?:&gt;|>) ?(.*?)\]\]/g, '$1 <$2> ')
 		// 各行の行末空白をトリム
 		.split(/\r?\n/)
 		.map(s => s.trimRight())
