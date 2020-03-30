@@ -26,6 +26,10 @@ program
 	.option('-a, --batch-file <FILE>', `File containing URLs to download, one URL per line. Lines starting with '#', ';' or ']' are considered as comments and ignored.`)
 	.parse(process.argv)
 
+function getReadableDate() {
+	const now = new Date()
+	return `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`
+}
 function resolveArgv(opts: ArgumentsOptions, args: string[]) {
 	// リストファイルの読み込みと適用
 	if (opts.A) {
@@ -69,6 +73,9 @@ String.prototype['pixivNovel2AozoraTxt'] = function() {
 		.replace(/<\/?div.*?>/gis, '')
 		.replace(/<\/h\d.*?>/gi, '')
 		.replace(/<br \/>/gi, '')
+		// [TODO] 「ルビ記号など、特別な役割を与えられた文字」への対応
+		// 《》［］〔〕｜＃※
+		// ref: https://www.aozora.gr.jp/annotation/extra.html#special_character
 		// 改ページ
 		.replace(/\[newpage\]/gi, '［＃改ページ］')
 		// チャプター
@@ -149,7 +156,17 @@ if (!fs.existsSync(baseDir)) {
 		const authorId = userdata.querySelector('.name a')?.getAttribute('href')?.match(/\/(\d+)$/)![1]
 		const authorDir = `${authorId}_${author}`
 		const fileName = `${articleId}_${title}`
-		const article = dom.querySelector('.novelbody-container noscript')?.textContent?.pixivNovel2AozoraTxt() ?? ''
+		const article = [
+			dom
+				.querySelector('.novelbody-container noscript')
+				?.textContent?.pixivNovel2AozoraTxt(),
+				'',
+				'',
+				`底本：「${title}」`,
+				`　　　${item}`,
+				`${getReadableDate()}作成`,
+				''
+			].join('\r\n')
 
 		const aozoraTxt = [title, author, item, '', '', article].join('\r\n')
 		const targetDir = `${baseDir}/${authorDir}`
