@@ -1,12 +1,12 @@
 {
   "name": "pixiv-novel-downloader",
-  "description": "Download Pixiv novels like Aozora-bunko format",
+  "description": "Download Pixiv novels as format like Aozora-bunko",
   "version": "1.1.0",
   "main": "dist/pixiv-novel-downloader.js",
   "author": "sasaky <athene609.cyl@gmail.com>",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=12"
+    "node": "^10"
   },
   "scripts": {
     "start": "./dist/pixiv-novel-downloader.js",
@@ -17,18 +17,27 @@
   "dependencies": {
     "@types/jsdom": "^12.2.4",
     "@types/node": "^13.7.0",
+    "async-prompt": "^1.0.1",
     "commander": "^4.1.1",
     "jsdom": "^16.0.1",
     "mkdirp": "^1.0.3",
+    "pixiv.ts": "^0.3.4",
+    "readline-sync": "^1.4.10",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.1-rc"
   },
   "devDependencies": {
+    "@types/readline-sync": "^1.4.3",
     "@types/webpack": "^4.41.4",
     "canvas": "^2.6.1",
     "node-loader": "^0.6.0",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "useTabs": true
   }
 }
