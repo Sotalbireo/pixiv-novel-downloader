@@ -1,7 +1,7 @@
 {
   "name": "pixiv-novel-downloader",
   "description": "Download Pixiv novels as format like Aozora-bunko",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/pixiv-novel-downloader.js",
   "author": "sasaky <athene609.cyl@gmail.com>",
   "license": "Apache-2.0",
@@ -11,26 +11,27 @@
   "scripts": {
     "start": "./dist/pixiv-novel-downloader.js",
     "dev": "./node_modules/.bin/ts-node ./src/mod.ts",
-    "compile": "webpack",
+    "compile": "webpack && pkg ./dist/main.js --out-path ./dist --targets node10-linux-x64",
+    "postcompile": "chmod u+x ./dist/pixiv-novel-downloader",
     "test": "yarn dev 129"
   },
   "dependencies": {
-    "@types/jsdom": "^12.2.4",
-    "@types/node": "^13.7.0",
-    "async-prompt": "^1.0.1",
-    "commander": "^4.1.1",
+    "commander": "^5.0.0",
     "jsdom": "^16.0.1",
-    "mkdirp": "^1.0.3",
     "pixiv.ts": "^0.3.4",
     "readline-sync": "^1.4.10",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.1-rc"
   },
   "devDependencies": {
+    "@types/jsdom": "^16.2.0",
+    "@types/node": "^13.7.0",
     "@types/readline-sync": "^1.4.3",
     "@types/webpack": "^4.41.4",
     "canvas": "^2.6.1",
+    "nexe": "^3.3.2",
     "node-loader": "^0.6.0",
+    "pkg": "^4.4.5",
     "ts-loader": "^6.2.1",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
@@ -39,5 +40,13 @@
     "semi": false,
     "singleQuote": true,
     "useTabs": true
+  },
+  "pkg": {
+    "assets": [
+      "./node_modules/@types",
+      "./node_modules/typescript/lib/*.d.ts",
+      "./src/**/*.ts",
+      "./tsconfig.json"
+    ]
   }
 }

@@ -10,6 +10,15 @@ export function getReadableDate(timestamp = Date.now()) {
 }
 
 /**
+ * いつもの
+ * @param msec 停止させたいミリ秒
+ */
+export function sleep(msec: number) {
+	return new Promise(resolve => setTimeout(resolve, msec))
+}
+
+
+/**
  * フォルダ・ファイル名に使えない文字列を差し替える
  * @param str フォルダ・ファイル名文字列
  * @return 差し替え文字列
