@@ -1,14 +1,14 @@
-import commander from 'commander'
-import fs from 'fs'
+import { Command } from 'commander'
+import * as fs from 'fs'
 import { homedir } from 'os'
-import jsdom from 'jsdom'
+import * as jsdom from 'jsdom'
 import { description, version } from '../package.json'
 import { resolve } from 'path'
 import PixivNovel2AozoraTxt from './PixivNovel2AozoraTxt'
 import { getReadableDate, stylizesStr4UsedInFiles, sleep } from './util'
-import readlineSync from 'readline-sync'
+import * as readlineSync from 'readline-sync'
 import Pixiv from 'pixiv.ts'
-const program = new commander.Command()
+const program = new Command()
 const { writeFile } = fs.promises
 const { JSDOM } = jsdom
 

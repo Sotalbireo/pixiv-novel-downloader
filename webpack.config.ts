@@ -22,9 +22,6 @@ const config: webpack.Configuration = {
 			}
 		]
 	},
-	node: {
-		stream: 'mock'
-	},
 	resolve: {
 		extensions: ['.ts', '.js', '.json'],
 		modules: ['node_modules']
