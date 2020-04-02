@@ -36,7 +36,7 @@ const reBaseUrl = /^https?:\/\/www\.pixiv\.net\/novel\/show.php\?id=(\d+)$/
 const options: ArgumentsOptions = Object.assign(
 	{},
 	<ArgumentsOptions>program
-		.name('pixiv-novel-downloader.js')
+		.name('pixiv-novel-downloader')
 		.description(description)
 		.usage('[options] urls...')
 		.version(version, '-v, --version', 'output the current version')
